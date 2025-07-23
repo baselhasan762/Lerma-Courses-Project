@@ -8,6 +8,7 @@ import com.tenmacourses.tenmacourses.Enums.Role;
 import com.tenmacourses.tenmacourses.Service.CourseService;
 import com.tenmacourses.tenmacourses.Service.LessonService;
 import com.tenmacourses.tenmacourses.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,8 +57,8 @@ public class LessonController {
     }
 
     @PostMapping(value = "/uploadLesson", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> addLesson(@RequestPart("lesson") LessonDTO lessonDTO,
-                                               @RequestPart("file") MultipartFile file) {
+    public ResponseEntity<String> addLesson(@Valid @RequestPart(value = "lesson",required = true) LessonDTO lessonDTO,
+                                               @RequestPart(value = "file",required = true) MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Users user = userService.getUserByName(username);
@@ -114,7 +115,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateLesson(@PathVariable Integer id, @RequestBody Lessons updatedLesson) {
+    public ResponseEntity<String> updateLesson(@PathVariable Integer id, @Valid @RequestPart LessonDTO updatedLesson,@RequestPart(required = false) MultipartFile newFile) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -137,7 +138,7 @@ public class LessonController {
         }
 
 
-        boolean success = lessonsService.updateLesson(id, updatedLesson);
+        boolean success = lessonsService.updateLesson(id, updatedLesson,newFile);
         return success
                 ? ResponseEntity.ok("Lesson Updated Successfully")
                 : ResponseEntity.notFound().build();

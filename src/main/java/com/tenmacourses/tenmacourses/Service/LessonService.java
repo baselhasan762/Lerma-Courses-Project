@@ -1,12 +1,15 @@
 package com.tenmacourses.tenmacourses.Service;
 
+import com.tenmacourses.tenmacourses.DTO.LessonDTO;
 import com.tenmacourses.tenmacourses.Entity.Lessons;
 import com.tenmacourses.tenmacourses.Repository.LessonsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,19 +72,45 @@ public class LessonService {
 
     }
 
-    public boolean updateLesson(Integer id, Lessons updatedLesson) {
+    public boolean updateLesson(Integer id, LessonDTO updatedLesson, MultipartFile newFile) {
         return lessonsRepo.findById(id).map(existingLesson -> {
+            try {
+                if (newFile != null && !newFile.isEmpty()) {
+                    String oldFilePath = existingLesson.getContent_url();
+                    File oldFile = new File(oldFilePath);
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
 
-            existingLesson.setTitle(updatedLesson.getTitle());
-            existingLesson.setContent_type(updatedLesson.getContent_type());
+                    String uploadDir = "uploads/courses/" + existingLesson.getCourse().getId();
+                    Path uploadPath = Paths.get(uploadDir);
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
+                    }
 
-            if (updatedLesson.getCourse() != null) {
-                existingLesson.setCourse(updatedLesson.getCourse());
+                    String newFilename = UUID.randomUUID() + "_" + newFile.getOriginalFilename();
+                    Path filePath = uploadPath.resolve(newFilename);
+                    Files.copy(newFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    existingLesson.setContent_url(filePath.toString());
+                }
+
+                existingLesson.setTitle(updatedLesson.getTitle());
+                existingLesson.setContent_type(updatedLesson.getContent_type());
+                existingLesson.setCreated_at(LocalDateTime.now());
+
+                if (updatedLesson.getCourse() != null) {
+                    existingLesson.setCourse(updatedLesson.getCourse());
+                }
+
+                lessonsRepo.save(existingLesson);
+                return true;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
             }
-
-            lessonsRepo.save(existingLesson);
-            return true;
         }).orElse(false);
     }
+
 
 }

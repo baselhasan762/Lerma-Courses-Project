@@ -1,16 +1,34 @@
 package com.tenmacourses.tenmacourses.DTO;
 
 import com.tenmacourses.tenmacourses.Entity.Courses;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 
 public class LessonDTO {
-        private Integer courseId;
-        private String title;
-        private String content_type;
-        private String content_url;
-        private String duration;
+    @NotNull(message = "Course ID is required")
+    private Courses course;
+
+    @NotBlank(message = "Title is required")
+    private Integer courseId;
+
+    @NotBlank(message = "Content type is required")
+    private String title;
+
+    private String content_type;
+    private String content_url;
+    private String duration;
 
     public Integer getCourseId() {
         return courseId;
+    }
+
+    public Courses getCourse() {
+        return course;
+    }
+
+    public void setCourse(Courses course) {
+        this.course = course;
     }
 
     public void setCourseId(Integer courseId) {
