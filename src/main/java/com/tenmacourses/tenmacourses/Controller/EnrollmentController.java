@@ -2,6 +2,7 @@ package com.tenmacourses.tenmacourses.Controller;
 
 import com.tenmacourses.tenmacourses.Entity.Enrollment;
 import com.tenmacourses.tenmacourses.Service.EnrollmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class EnrollmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> addEnrollment(@RequestBody Enrollment enrollment) {
+    public ResponseEntity<Boolean> addEnrollment( @Valid @RequestBody Enrollment enrollment) {
         boolean success = enrollmentService.addEnrollment(enrollment);
         return success
                 ? ResponseEntity.ok(true)

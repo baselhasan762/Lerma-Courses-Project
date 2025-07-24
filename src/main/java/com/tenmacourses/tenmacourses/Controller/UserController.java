@@ -38,26 +38,24 @@ public class UserController {
     }
 
     @GetMapping("/get_user")
-    public ResponseEntity<UserResponseDTO> GetAllUsers(@RequestParam int id ) {
+    public ResponseEntity<UserResponseDTO> GetUser(@RequestParam int id ) {
         UserResponseDTO users = userService.getUserById(id);
         return ResponseEntity.ok(users);
     }
     @PostMapping("/register_user")
-    public ResponseEntity<Boolean> AddNewUser(@RequestBody Users user){
+    public ResponseEntity<?> AddNewUser(@RequestBody Users user){
         boolean success = userService.addNewUser(user);
         if (success) {
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok("User Added Successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Couldn't add user");
         }
     }
 
 
 
-
-
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginDTO user){
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO user){
         String token = userService.verify(user);
 
         if(token.equals("Authentication Failed")){
@@ -68,7 +66,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete_user/{id}")
-    public ResponseEntity<HttpStatus> deleteUser(@PathVariable int id) {
+    public ResponseEntity<?> deleteUser(@PathVariable int id) {
         boolean success = userService.deleteUser(id);
 
         if (success) {

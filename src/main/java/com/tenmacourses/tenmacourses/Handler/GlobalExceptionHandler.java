@@ -25,15 +25,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors , HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<String> handleAccessDenied(AccessDeniedException ex){
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to do this action.");
-    }
 
     @ExceptionHandler
     public ResponseEntity<String> handleMaxSizeException(MaxUploadSizeExceededException ex){

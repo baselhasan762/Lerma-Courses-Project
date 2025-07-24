@@ -45,4 +45,16 @@ public class ReviewsService {
             return false;
         }
     }
+
+    public boolean updateReview(int id, Reviews updatedReview) {
+        return reviewsRepo.findById(id).map(existingReview -> {
+            existingReview.setRating(updatedReview.getRating());
+            existingReview.setReviewText(updatedReview.getReviewText());
+            existingReview.setCreatedAt(updatedReview.getCreatedAt());
+
+            reviewsRepo.save(existingReview);
+            return true;
+        }).orElse(false);
+    }
+
 }
