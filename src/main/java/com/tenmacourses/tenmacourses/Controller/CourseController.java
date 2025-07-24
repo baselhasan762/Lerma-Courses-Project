@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/api/courses")
 public class CourseController {
 
     private final CourseService courseService;
@@ -39,14 +39,14 @@ public class CourseController {
         return ResponseEntity.ok(courses);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<Courses> getCourseById(@PathVariable Integer id) {
         return courseService.getCourseById(id)
                 .map(course -> ResponseEntity.ok(course))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<String> addNewCourse(@RequestBody Courses course) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -110,7 +110,7 @@ public class CourseController {
     }
 
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/purchase")
     @Transactional
     public ResponseEntity<String> purchaseCourse(@PathVariable Integer id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/lessons")
+@RequestMapping("/api/lessons")
 public class LessonController {
 
     private final LessonService lessonsService;
@@ -50,7 +50,7 @@ public class LessonController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(value = "/uploadLesson", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addLesson(@Valid @RequestPart(value = "lesson",required = true) LessonDTO lessonDTO,
                                                @RequestPart(value = "file",required = true) MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -85,7 +85,7 @@ public class LessonController {
 
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLesson(@PathVariable int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/reviews")
 public class ReviewController {
 
     private final ReviewsService reviewsService;
@@ -44,7 +44,7 @@ public class ReviewController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateReview(@RequestBody Reviews UpdatedReview,@PathVariable int id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Users user = userService.getUserByName(authentication.getName());
@@ -66,7 +66,7 @@ public class ReviewController {
 
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> addReview(@RequestBody Reviews review) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Users user = userService.getUserByName(authentication.getName());
@@ -79,7 +79,7 @@ public class ReviewController {
         return success ? ResponseEntity.ok("Review Added Successfully") : ResponseEntity.internalServerError().body("Couldn't Add Review");
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Users user = userService.getUserByName(authentication.getName());
