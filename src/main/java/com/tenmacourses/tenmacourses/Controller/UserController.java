@@ -30,18 +30,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/get_all")
+    @GetMapping
     public ResponseEntity<List<UserResponseDTO>> GetAllUsers() {
         List<UserResponseDTO> users = userService.getAll();
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/get_user")
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> GetUser(@RequestParam int id ) {
         UserResponseDTO users = userService.getUserById(id);
         return ResponseEntity.ok(users);
     }
-    @PostMapping("/register_user")
+    @PostMapping
     public ResponseEntity<?> AddNewUser(@RequestBody Users user){
         boolean success = userService.addNewUser(user);
         if (success) {
@@ -64,7 +64,7 @@ public class UserController {
         return ResponseEntity.ok(token);
     }
 
-    @DeleteMapping("/delete_user/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable int id) {
         boolean success = userService.deleteUser(id);
 

@@ -39,7 +39,7 @@ public class CourseController {
         return ResponseEntity.ok(courses);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<Courses> getCourseById(@PathVariable Integer id) {
         return courseService.getCourseById(id)
                 .map(course -> ResponseEntity.ok(course))
