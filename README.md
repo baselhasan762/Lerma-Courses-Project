@@ -2,7 +2,7 @@ Skill Hub
 
 
 
-&nbsp;Spring Boot-based REST API for an online course platform, featuring authentication, course management, enrollments, and reviews.
+Spring Boot-based REST API for an online course platform, featuring authentication, course management, enrollments, and reviews.
 
 Built with Spring Boot 3, JWT Authentication, and Swagger UI for API documentation.
 
@@ -10,126 +10,121 @@ Built with Spring Boot 3, JWT Authentication, and Swagger UI for API documentati
 
 ✅ Features
 
-User Authentication \& Authorization
+-User Authentication \& Authorization
 
 
 
-Login \& Registration
+-Login \& Registration
 
 
 
-Role-based access (Admin, User, Student) 
+-Role-based access (Admin, User, Student) 
 
 
 
-Course Management
+-Course Management
 
 
 
-Course Purchase Virtual System
+-Course Purchase Virtual System
 
 
 
-Create, update, delete, list courses
+-Create, update, delete, list courses
 
 
 
-Lesson Management
+-Lesson Management
 
 
 
-Add lessons to courses
+-Add lessons to courses
 
 
 
-Enrollments
+-Enrollments
 
 
 
-Users can enroll in courses
+-Users can enroll in courses
 
 
 
-Reviews
+-Reviews
 
 
 
-Add course reviews and ratings
+-Add course reviews and ratings
 
 
 
-API Documentation
+-API Documentation Integrated with Swagger UI
 
 
 
-Integrated with Swagger UI
-
-
-
-Global Exception Handling
+-Global Exception Handling
 
 
 
 ✅ Tech Stack
 
-Backend: Java 17, Spring Boot 3
+-Backend: Java 17, Spring Boot 3
 
 
 
-Security: Spring Security, JWT
+-Security: Spring Security, JWT
 
 
 
-Database: MySQL (configurable)
+-Database: MySQL (configurable)
 
 
 
-Build Tool: Maven
+-Build Tool: Maven
 
 
 
-Documentation: Swagger (OpenAPI)
+-Documentation: Swagger (OpenAPI)
 
 
 
-Other: JPA, Hibernate
+-Other: JPA, Hibernate
 
 
 
 ✅ How to Run
 
-Prerequisites
+Prerequisites:
 
-Java 17+
-
-
-
-Maven 3.9+
+-Java 17+
 
 
 
-MySQL Database
+-Maven 3.9+
 
 
 
-IDE: IntelliJ / Eclipse / VS Code
+-MySQL Database
 
 
 
-Steps
-
-Clone the project
+-IDE: IntelliJ / Eclipse / VS Code
 
 
 
-git clone <repository-url>
+Steps:
 
-cd tenmacourses
+1-Clone the project
 
-Configure Database
+
+
+2-git clone <repository-url>
+
+3-cd tenmacourses
+
+4-Configure Database
 
 src/main/resources/application.properties:
-
 
 
 spring.datasource.url=jdbc:mysql://localhost:3306/tenmacourses
