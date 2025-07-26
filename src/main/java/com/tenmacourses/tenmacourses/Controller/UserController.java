@@ -2,6 +2,7 @@ package com.tenmacourses.tenmacourses.Controller;
 
 
 import com.tenmacourses.tenmacourses.DTO.UserLoginDTO;
+import com.tenmacourses.tenmacourses.DTO.UserRequestDTO;
 import com.tenmacourses.tenmacourses.DTO.UserResponseDTO;
 import com.tenmacourses.tenmacourses.Entity.Users;
 import com.tenmacourses.tenmacourses.Service.JWTservice;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
@@ -31,18 +33,28 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> GetAllUsers() {
-        List<UserResponseDTO> users = userService.getAll();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<Users> users = userService.getAll();
+
+        List<UserResponseDTO> dtos = users.stream()
+                .map(user -> new UserResponseDTO(user))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> GetUser(@RequestParam int id ) {
-        UserResponseDTO users = userService.getUserById(id);
-        return ResponseEntity.ok(users);
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable int id) {
+        Users user = userService.getUserById(id);
+
+        UserResponseDTO dto = new UserResponseDTO(user);
+
+        return ResponseEntity.ok(dto);
     }
+
     @PostMapping
-    public ResponseEntity<?> AddNewUser(@RequestBody Users user){
+    public ResponseEntity<?> AddNewUser(@RequestBody UserRequestDTO user){
         boolean success = userService.addNewUser(user);
         if (success) {
             return ResponseEntity.ok("User Added Successfully");

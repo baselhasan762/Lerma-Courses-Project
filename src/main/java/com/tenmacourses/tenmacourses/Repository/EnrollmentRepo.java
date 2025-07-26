@@ -4,4 +4,6 @@ import com.tenmacourses.tenmacourses.Entity.Enrollment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnrollmentRepo extends JpaRepository<Enrollment,Integer> {
+    boolean existsByUserIdAndCourseId(Integer userId, Integer courseId);
+
 }

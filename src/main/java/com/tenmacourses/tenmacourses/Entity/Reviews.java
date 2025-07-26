@@ -1,6 +1,8 @@
 package com.tenmacourses.tenmacourses.Entity;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,11 +24,16 @@ public class Reviews {
     @Column(nullable = false)
     private int rating;
 
+    @Column(nullable = false)
+    private String comment ;
+
+
+
     @Column(name = "review_text")
     private String reviewText;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
 
     public int getId() {
@@ -69,11 +76,18 @@ public class Reviews {
         this.reviewText = reviewText;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

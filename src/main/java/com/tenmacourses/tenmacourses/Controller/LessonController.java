@@ -1,6 +1,8 @@
 package com.tenmacourses.tenmacourses.Controller;
 
-import com.tenmacourses.tenmacourses.DTO.LessonDTO;
+import com.tenmacourses.tenmacourses.DTO.CourseResponseDTO;
+import com.tenmacourses.tenmacourses.DTO.LessonRequestDTO;
+import com.tenmacourses.tenmacourses.DTO.LessonResponseDTO;
 import com.tenmacourses.tenmacourses.Entity.Courses;
 import com.tenmacourses.tenmacourses.Entity.Lessons;
 import com.tenmacourses.tenmacourses.Entity.Users;
@@ -18,8 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -39,19 +44,39 @@ public class LessonController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Lessons>> getAllLessons() {
-        return ResponseEntity.ok(lessonsService.getAllLessons());
+    public ResponseEntity<List<LessonResponseDTO>> getAllLessons() {
+        return ResponseEntity.ok(
+                lessonsService.getAllLessons().stream()
+                        .map(lesson -> new LessonResponseDTO(
+                                lesson.getCourse().getId(),
+                                lesson.getTitle(),
+                                lesson.getContent_type(),
+                                lesson.getContent_url(),
+                                lesson.getDuration(),
+                                lesson.getCreated_at()
+                        ))
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Lessons> getLessonById(@PathVariable int id) {
+    public ResponseEntity<LessonResponseDTO> getLessonById(@PathVariable int id) {
         return lessonsService.getLessonById(id)
+                .map(lesson -> new LessonResponseDTO(
+                        lesson.getCourse().getId(),
+                        lesson.getTitle(),
+                        lesson.getContent_type(),
+                        lesson.getContent_url(),
+                        lesson.getDuration(),
+                        lesson.getCreated_at()
+                ))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> addLesson(@Valid @RequestPart(value = "lesson",required = true) LessonDTO lessonDTO,
+    public ResponseEntity<String> addLesson(@Valid @RequestPart(value = "lesson",required = true) LessonRequestDTO lessonDTO,
                                                @RequestPart(value = "file",required = true) MultipartFile file) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -65,17 +90,17 @@ public class LessonController {
                 .orElseThrow(() -> new RuntimeException("Course Not Found"));
 
         if(user.getRole() != Role.INSTRUCTOR ||
-        !course.getInstructor().getId().equals(user.getId())){
+       ! course.getInstructor().getId().equals(user.getId())){
             return ResponseEntity.status(403).body("Only Instructors can add a lesson to their own courses");
         }
 
-
+        Courses savedCourse = courseService.getCourseById(course.getId()).orElseThrow(()->new RuntimeException("course not found"));
             Lessons lesson = new Lessons();
-            lesson.setCourse(course);
+            lesson.setCourse(savedCourse);
             lesson.setTitle(lessonDTO.getTitle());
             lesson.setContent_type(file.getContentType());
             lesson.setDuration(lessonDTO.getDuration());
-            lesson.setCreated_at(LocalDateTime.now());
+            lesson.setCreated_at(LocalDate.now());
 
            boolean success = lessonsService.addLesson(lesson,file,course.getId());
 
@@ -92,11 +117,18 @@ public class LessonController {
         Users user = userService.getUserByName(username);
 
         Lessons lesson = lessonsService.getLessonById(id).orElseThrow(()->
-        new RuntimeException("Course not found"));
+        new RuntimeException("Lesson not found"));
+
+        Optional<Courses> opcourse = courseService.getCourseById(lesson.getCourse().getId());
+
+        if(opcourse.isEmpty()){
+            return ResponseEntity.status(404).body("Course of the lesson Not Found");
+
+        }
+        Courses course = opcourse.get();
 
 
-        if (user.getRole() != Role.INSTRUCTOR ||
-                !lesson.getCourse().getInstructor().getId().equals(user.getId())) {
+        if (!course.getInstructor().getId().equals(user.getId())) {
             return ResponseEntity.status(403).body("Only instructors can Delete a lesson Of their own course");
         }
 
@@ -109,29 +141,33 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateLesson(@PathVariable Integer id, @Valid @RequestPart LessonDTO updatedLesson,@RequestPart(required = false) MultipartFile newFile) {
+    public ResponseEntity<String> updateLesson(@PathVariable Integer id, @Valid @RequestPart LessonRequestDTO updatedLessonDTO, @RequestPart(required = false) MultipartFile newFile) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Users user = userService.getUserByName(username);
 
         Lessons lesson = lessonsService.getLessonById(id).orElseThrow(()-> new RuntimeException("Course not found"));
-        Integer CourseId =lesson.getCourse().getId();
+
+        Optional<Courses> opcourse = courseService.getCourseById(lesson.getCourse().getId());
+
+        if(opcourse.isEmpty()){
+            return ResponseEntity.status(404).body("Course of the lesson Not Found");
+
+        }
+        Courses course = opcourse.get();
 
 
-        if (lesson.getCourse() == null || CourseId  == null) {
+        if (course == null) {
             return ResponseEntity.badRequest().body("Course ID is required");
         }
 
-        Courses course = courseService.getCourseById(lesson.getCourse().getId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-
         if (user.getRole() != Role.INSTRUCTOR ||
-                !course.getInstructor().getId().equals(user.getId())) {
+                course.getInstructor().getId()!=(user.getId())) {
             return ResponseEntity.status(403).body("Only instructors can update a lesson of their own course");
         }
 
-
+         Lessons updatedLesson=lessonsService.getLessonByName(updatedLessonDTO);
         boolean success = lessonsService.updateLesson(id, updatedLesson,newFile);
         return success
                 ? ResponseEntity.ok("Lesson Updated Successfully")

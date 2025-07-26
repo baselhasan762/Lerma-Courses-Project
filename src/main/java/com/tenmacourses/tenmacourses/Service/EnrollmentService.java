@@ -26,7 +26,10 @@ public class EnrollmentService {
         return enrollmentRepo.findById(id);
     }
 
-    public boolean addEnrollment(Enrollment enrollment) {
+    public boolean addEnrollment(Enrollment enrollment,int userId,int courseId) {
+        if (enrollmentRepo.existsByUserIdAndCourseId(userId, courseId)) {
+            return false;
+        }
         try {
             enrollmentRepo.save(enrollment);
             return true;

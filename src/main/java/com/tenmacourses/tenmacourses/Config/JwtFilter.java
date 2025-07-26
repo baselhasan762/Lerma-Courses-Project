@@ -40,7 +40,12 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("Request: " + path);
 
 
-        if (path.equals("/user/login") || path.equals("/user/register_user")) {
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/favicon.ico")
+                || path.equals("/index.html")
+                || path.equals("/api/user/login")
+                || path.equals("/api/user")||path.equals("/user/login") || path.equals("/user/register_user")) {
             filterChain.doFilter(request, response);
 
             return;

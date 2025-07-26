@@ -1,6 +1,7 @@
 package com.tenmacourses.tenmacourses.Service;
 
 import com.tenmacourses.tenmacourses.DTO.UserLoginDTO;
+import com.tenmacourses.tenmacourses.DTO.UserRequestDTO;
 import com.tenmacourses.tenmacourses.DTO.UserResponseDTO;
 import com.tenmacourses.tenmacourses.Entity.Users;
 import com.tenmacourses.tenmacourses.Repository.UserRepo;
@@ -12,6 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,41 +37,43 @@ public class UserService{
 
     }
 
-    public List<UserResponseDTO> getAll() {
+    public List<Users> getAll() {
 
-        return userRepo.findAll().
-                stream()
-                .map(user -> new UserResponseDTO(user))
-                .collect(Collectors.toList());
+        return userRepo.findAll();
     }
 
-    ;
 
-    public UserResponseDTO getUserById(Integer id) {
-        return userRepo.findById(id)
-                .map(user -> new UserResponseDTO(user))
-                .orElse(null);
+    public Users getUserById(Integer id) {
+        return userRepo.findById(id).orElseThrow(()->new RuntimeException("user not found"));
     }
 
     public Users getUserByName(String username){
         return userRepo.findByUsername(username);
     }
 
-    public boolean addNewUser(Users user){
-        try{
-            user.setPassword(encode.encode(user.getPassword()));
+    public boolean addNewUser(UserRequestDTO dto){
+        try {
+            Users user = new Users();
+            user.setUsername(dto.getUsername());
+            user.setEmail(dto.getEmail());
+            user.setPhone(dto.getPhone());
+            user.setPassword(encode.encode(dto.getPassword()));
+            user.setRole(dto.getRole());
+            user.setBalance(dto.getBalance());
+            user.setCreatedAt(LocalDate.now());
+            user.setUpdatedAt(LocalDate.now());
+
             userRepo.save(user);
-        }
-        catch(Exception ex){
-            System.out.println("There Was An Error Adding User");
+            return true;
+        } catch(Exception ex){
             ex.printStackTrace();
             return false;
         }
-        return true;
     }
 
 
-   public boolean deleteUser(int id ){
+
+    public boolean deleteUser(int id ){
 
         try{
            userRepo.deleteById(id);

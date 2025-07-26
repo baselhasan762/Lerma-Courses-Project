@@ -5,6 +5,7 @@ import com.tenmacourses.tenmacourses.Entity.Users;
 import com.tenmacourses.tenmacourses.Enums.Role;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class UserResponseDTO {
     private int id;
@@ -13,8 +14,24 @@ public class UserResponseDTO {
 
     private String email;
 
-    @JsonIgnore
-    private String password;
+    private LocalDate createdAt;
+    private  LocalDate updatedAt;
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     private BigDecimal balance ;
     private Role role;
@@ -63,13 +80,6 @@ public class UserResponseDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public Role getRole() {
         return role;

@@ -1,10 +1,14 @@
 package com.tenmacourses.tenmacourses.Service;
 
-import com.tenmacourses.tenmacourses.DTO.LessonDTO;
+import com.tenmacourses.tenmacourses.DTO.CourseResponseDTO;
+import com.tenmacourses.tenmacourses.DTO.LessonRequestDTO;
+import com.tenmacourses.tenmacourses.DTO.LessonResponseDTO;
+import com.tenmacourses.tenmacourses.Entity.Courses;
 import com.tenmacourses.tenmacourses.Entity.Lessons;
+import com.tenmacourses.tenmacourses.Repository.CourseRepo;
 import com.tenmacourses.tenmacourses.Repository.LessonsRepo;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,18 +18,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class LessonService {
 
     private final LessonsRepo lessonsRepo;
+    private final CourseRepo courseRepo;
 
     @Autowired
-    public LessonService(LessonsRepo lessonsRepo) {
+    public LessonService(LessonsRepo lessonsRepo,CourseRepo courseRepo) {
+        this.courseRepo = courseRepo;
         this.lessonsRepo = lessonsRepo;
     }
 
@@ -33,9 +41,11 @@ public class LessonService {
         return lessonsRepo.findAll();
     }
 
+
     public Optional<Lessons> getLessonById(int id) {
         return lessonsRepo.findById(id);
     }
+
 
     public boolean addLesson(Lessons lesson, MultipartFile file, Integer courseId) {
         try {
@@ -72,7 +82,7 @@ public class LessonService {
 
     }
 
-    public boolean updateLesson(Integer id, LessonDTO updatedLesson, MultipartFile newFile) {
+    public boolean updateLesson(Integer id, Lessons updatedLesson, MultipartFile newFile) {
         return lessonsRepo.findById(id).map(existingLesson -> {
             try {
                 if (newFile != null && !newFile.isEmpty()) {
@@ -96,11 +106,13 @@ public class LessonService {
 
                 existingLesson.setTitle(updatedLesson.getTitle());
                 existingLesson.setContent_type(updatedLesson.getContent_type());
-                existingLesson.setCreated_at(LocalDateTime.now());
+                existingLesson.setCreated_at(LocalDate.now());
 
-                if (updatedLesson.getCourse() != null) {
-                    existingLesson.setCourse(updatedLesson.getCourse());
+                if (updatedLesson.getCourse().getId() != null) {
+                    Courses course = courseRepo.findById(updatedLesson.getCourse().getId()).orElseThrow(() -> new RuntimeException("Course not found with ID: " + updatedLesson.getCourse().getId()));
+                    existingLesson.setCourse(course);
                 }
+
 
                 lessonsRepo.save(existingLesson);
                 return true;
@@ -113,4 +125,7 @@ public class LessonService {
     }
 
 
+    public Lessons getLessonByName(@Valid LessonRequestDTO updatedLessonDTO) {
+      return  lessonsRepo.findByTitle(updatedLessonDTO.getTitle());
+    }
 }

@@ -39,11 +39,19 @@ public class SecurityConfig {
 
       return  http
                 .csrf(customzier ->customzier.disable())
+
         .authorizeHttpRequests(request ->request.
-                requestMatchers("/api/user","/api/user/login").
+                requestMatchers(
+                        "/", "/favicon.ico",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/api/user/login",
+                        "/api/user",
+                        "/api/user/login").
                 permitAll()
                 .anyRequest().authenticated())
-              .httpBasic(Customizer.withDefaults())
+
         .sessionManagement(session->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

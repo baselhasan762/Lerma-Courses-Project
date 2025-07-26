@@ -1,7 +1,9 @@
 package com.tenmacourses.tenmacourses.Entity;
 
+import com.tenmacourses.tenmacourses.DTO.CourseResponseDTO;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +19,7 @@ public class Lessons {
     @JoinColumn(name = "course_id")
     private Courses course;
 
+
     private String title;
 
     private String content_type;
@@ -25,9 +28,9 @@ public class Lessons {
 
     private String duration;
 
-    private LocalDateTime created_at;
+    private LocalDate created_at;
 
-    public Lessons(int id, Courses course, String title, String content_type, String content_url, String duration, LocalDateTime created_at) {
+    public Lessons(int id, Courses course, String title, String content_type, String content_url, String duration, LocalDate created_at) {
         Id = id;
         this.course = course;
         this.title = title;
@@ -88,11 +91,11 @@ public class Lessons {
         this.duration = duration;
     }
 
-    public LocalDateTime getCreated_at() {
+    public LocalDate getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
+    public void setCreated_at(LocalDate created_at) {
         this.created_at = created_at;
     }
 
